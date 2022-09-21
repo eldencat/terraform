@@ -43,12 +43,12 @@ cargo_run = $(call docker_run,cargo $(1) --manifest-path "$(CARGO_MANIFEST_PATH)
 endif
 
 taplo_run = docker run \
-    	--name=$(DOCKER_NAME)-taplo-$@ \
-		--rm \
-		--user `id -u`:`id -g` \
-		-w "/usr/src/app" \
-		-v "$(PWD):/usr/src/app" \
-        -t tamasfe/taplo $(1)
+	--name=$(DOCKER_NAME)-taplo-$@ \
+	--rm \
+	--user `id -u`:`id -g` \
+	-w "/usr/src/app" \
+	-v "$(PWD):/usr/src/app" \
+	-t tamasfe/taplo $(1)
 
 cspell_run = docker run \
 		--name=$(DOCKER_NAME)-cspell-$@ \

@@ -2,9 +2,9 @@ locals {
   default_branch = "develop"
 
   svc = {
-    # "sample" = {
-    #   description = "Testing"
-    # }
+    "storage" = {
+      description = "Storage Microservice"
+    }
   }
 
   lib = {
@@ -98,6 +98,7 @@ module "votive_lib" {
   name        = format("votive-lib-%s", each.key)
   description = "Library for the Votive Dictionary Management System"
   visibility  = "public"
+
   required_files = merge(
     local.required_files,
     { for file, path in local.required_template_files :

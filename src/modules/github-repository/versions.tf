@@ -6,4 +6,11 @@ terraform {
       version = "5.3.0"
     }
   }
+
+  cloud {
+    organization = "eldencat"
+    workspaces {
+      name = "terraform"
+    }
+  }
 }
