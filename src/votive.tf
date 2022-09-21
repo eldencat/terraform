@@ -2,9 +2,9 @@ locals {
   default_branch = "develop"
 
   svc = {
-    # "sample" = {
-    #   description = "Testing"
-    # }
+    "storage" = {
+      description = "Storage Microservice"
+    }
   }
 
   lib = {
