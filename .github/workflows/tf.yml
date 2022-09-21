@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  GITHUB_APP_PEM_FILE: ${{ secrets.TF_GITHUB_APP_PEM_FILE }}
+  GITHUB_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
 
 jobs:
   terraform:
