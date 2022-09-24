@@ -22,3 +22,6 @@ validate:
 
 init:
 	@$(call tf_call,init)
+
+apply:
+	@$(call tf_call,apply)
