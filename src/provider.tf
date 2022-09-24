@@ -1,7 +1,6 @@
 provider "github" {
   owner = "eldencat"
-  alias = "integrations"
   app_auth {
-
+    token = var.github_token
   }
 }
