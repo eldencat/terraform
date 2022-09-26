@@ -7,8 +7,6 @@ BUILD_IMAGE_TAG  := latest
 DOCKER_PORT      := 8080
 HOST_PORT        := ${port}
 
-# We might not have a Cargo.toml file in the root dir
-CARGO_MANIFEST_PATH ?= $(shell find -maxdepth 2 -name Cargo.toml)
 CARGO_INCREMENTAL   ?= 1
 RUSTC_BOOTSTRAP     ?= 0
 RELEASE_TARGET      ?= x86_64-unknown-linux-musl
@@ -30,32 +28,28 @@ docker_run = docker run \
 	--user `id -u`:`id -g` \
 	-e CARGO_INCREMENTAL=$(CARGO_INCREMENTAL) \
 	-e RUSTC_BOOTSTRAP=$(RUSTC_BOOTSTRAP) \
-	-v "$(PWD):/usr/src/app" \
+	-v "$(PWD):/usr/local/app" \
 	-v "$(PWD)/.cargo/registry:/usr/local/cargo/registry" \
 	$(2) \
 	-t $(BUILD_IMAGE_NAME):$(BUILD_IMAGE_TAG) \
 	$(1)
 
-ifeq ("$(CARGO_MANIFEST_PATH)", "")
-cargo_run = echo "$(BOLD)$(YELLOW)No Cargo.toml found in any of the subdirectories, skipping cargo check...$(NC)$(SGR0)"
-else
-cargo_run = $(call docker_run,cargo $(1) --manifest-path "$(CARGO_MANIFEST_PATH)" $(2))
-endif
+cargo_run = $(call docker_run,cargo $(1) $(2))
 
 taplo_run = docker run \
 	--name=$(DOCKER_NAME)-taplo-$@ \
 	--rm \
 	--user `id -u`:`id -g` \
-	-w "/usr/src/app" \
-	-v "$(PWD):/usr/src/app" \
+	-w "/usr/local/app" \
+	-v "$(PWD):/usr/local/app" \
 	-t tamasfe/taplo $(1)
 
 cspell_run = docker run \
 		--name=$(DOCKER_NAME)-cspell-$@ \
 		--rm \
 		--user `id -u`:`id -g` \
-		-w "/usr/src/app" \
-		-v "$(PWD):/usr/src/app" \
+		-w "/usr/local/app" \
+		-v "$(PWD):/usr/local/app" \
 		-t ghcr.io/streetsidesoftware/cspell:6.10.1 \
 		cspell $(1)
 
@@ -100,10 +94,11 @@ help:
 %{ endif }
 
 # Rust / cargo targets
-check-cargo-registry:
-	if [ ! -d "$(PWD)/.cargo/registry" ]; then mkdir -p "$(PWD)/.cargo/registry" ; fi
+pre-action:
+    @docker pull $(BUILD_IMAGE_NAME):$(BUILD_IMAGE_TAG)
+    if [ ! -d "$(PWD)/.cargo/registry" ]; then mkdir -p "$(PWD)/.cargo/registry" ; fi
 
-build: check-cargo-registry
+build: pre-action
 	@$(call cargo_run,build)
 
 release:
@@ -112,23 +107,23 @@ release:
 publish:
 	@$(call cargo_run,publish,--dry-run --target $(RELEASE_TARGET))
 
-clean: check-cargo-registry
+clean: pre-action
 	@$(call cargo_run,clean)
 
-rust-check: check-cargo-registry
+rust-check: pre-action
 	@$(call cargo_run,check)
 
-rust-test: check-cargo-registry
+rust-test: pre-action
 	@$(call cargo_run,test,--all)
 
-rust-clippy: check-cargo-registry
+rust-clippy: pre-action
 	@$(call cargo_run,clippy,--all -- -D warnings)
 
-rust-fmt: check-cargo-registry
+rust-fmt: pre-action
 	@echo "$(YELLOW)Running and checking Rust codes formats...$(NC)"
 	@$(call cargo_run,fmt,--all -- --check)
 
-rust-tidy: check-cargo-registry
+rust-tidy: pre-action
 	@echo "$(YELLOW)Running rust file formatting fixes...$(NC)"
 	@$(call cargo_run,fmt,--all)
 
@@ -148,8 +143,8 @@ editorconfig-test:
 		--name=$(DOCKER_NAME)-$@ \
 		--rm \
 		--user `id -u`:`id -g` \
-		-w "/usr/src/app" \
-		-v "$(PWD):/usr/src/app" \
+		-w "/usr/local/app" \
+		-v "$(PWD):/usr/local/app" \
 		-t mstruebing/editorconfig-checker
 
 # cspell targets
