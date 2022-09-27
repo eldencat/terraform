@@ -7,6 +7,7 @@ BUILD_IMAGE_TAG  := latest
 DOCKER_PORT      := 8080
 HOST_PORT        := ${port}
 
+CARGO_MANIFEST_PATH ?= $(shell find -maxdepth 1 -name Cargo.toml)
 CARGO_INCREMENTAL   ?= 1
 RUSTC_BOOTSTRAP     ?= 0
 RELEASE_TARGET      ?= x86_64-unknown-linux-musl
@@ -34,7 +35,7 @@ docker_run = docker run \
 	-t $(BUILD_IMAGE_NAME):$(BUILD_IMAGE_TAG) \
 	$(1)
 
-cargo_run = $(call docker_run,cargo $(1) $(2))
+cargo_run = $(call docker_run,cargo $(1) --manifest-path "$(CARGO_MANIFEST_PATH)" $(2))
 
 taplo_run = docker run \
 	--name=$(DOCKER_NAME)-taplo-$@ \
