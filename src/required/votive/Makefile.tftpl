@@ -95,8 +95,8 @@ help:
 
 # Rust / cargo targets
 pre-action:
-    @docker pull $(BUILD_IMAGE_NAME):$(BUILD_IMAGE_TAG)
-    if [ ! -d "$(PWD)/.cargo/registry" ]; then mkdir -p "$(PWD)/.cargo/registry" ; fi
+	@docker pull $(BUILD_IMAGE_NAME):$(BUILD_IMAGE_TAG)
+	if [ ! -d "$(PWD)/.cargo/registry" ]; then mkdir -p "$(PWD)/.cargo/registry" ; fi
 
 build: pre-action
 	@$(call cargo_run,build)
