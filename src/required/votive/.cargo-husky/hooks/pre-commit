@@ -20,9 +20,6 @@ set -e
 # RUST
 make rust-test
 
-# PYTHON 3
-make python-test
-
 # TOML formatting
 make toml-test
 
