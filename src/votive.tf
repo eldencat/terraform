@@ -3,7 +3,6 @@ locals {
 
   svc = {
     "storage" = {
-      description = "Storage Microservice"
     }
   }
 
@@ -11,6 +10,12 @@ locals {
     # "test" = {
     #   description = "Testing"
     # }
+  }
+
+  other_bin = {
+    "web" = {
+      description = "Web Application for the Votive Dictionary Management System"
+    }
   }
 
   required_template_files = {
@@ -72,7 +77,7 @@ module "votive_svc" {
     { for file, path in local.required_template_files :
       file => {
         content = templatefile(path, {
-          type = "svc"
+          type = "bin"
           name = format("votive-svc-%s", each.key)
           port = format("80%02.0f", index(keys(local.svc), each.key))
         }),
@@ -114,6 +119,38 @@ module "votive_lib" {
     file => {
       content = templatefile(path, {
         name = format("votive-lib-%s", each.key)
+      })
+      overwrite_on_create = false
+    }
+  }
+  default_branch = "develop"
+}
+
+
+module "votive_other_binary" {
+  source = "./modules/github-repository/"
+
+  for_each = local.other_bin
+
+  name        = format("votive-%s", each.key)
+  description = try(each.value.description, "")
+  visibility  = "public"
+  required_files = merge(
+    local.required_files,
+    { for file, path in local.required_template_files :
+      file => {
+        content = templatefile(path, {
+          type = "bin"
+          name = format("votive-%s", each.key)
+          port = format("90%02.0f", index(keys(local.other_bin), each.key))
+        }),
+        overwrite_on_create = true
+      }
+  })
+  oncreate_files = { for file, path in local.oncreate_files :
+    file => {
+      content = templatefile(path, {
+        name = format("votive-%s", each.key)
       })
       overwrite_on_create = false
     }
