@@ -11,6 +11,7 @@ CARGO_MANIFEST_PATH ?= $(shell find -maxdepth 1 -name Cargo.toml)
 CARGO_INCREMENTAL   ?= 1
 RUSTC_BOOTSTRAP     ?= 0
 RELEASE_TARGET      ?= x86_64-unknown-linux-musl
+MD_FILES ?= $(shell find . -type f -iname '*.md' ! -path "./target/*" ! -path "./.cargo/*" ! -path "./.cargo-husky/*")
 
 # Style templates for console output.
 GREEN  := $(shell echo -e `tput setaf 2`)
@@ -147,6 +148,18 @@ editorconfig-test:
 		-w "/usr/local/app" \
 		-v "$(PWD):/usr/local/app" \
 		-t mstruebing/editorconfig-checker
+
+link-test:
+	@echo "$(YELLOW)'make link-test': Checking if all document links are valid...$(NC)"
+	@docker run \
+		--name=link-test \
+		--rm \
+		--user `id -u`:`id -g` \
+		-w "/usr/src/app" \
+		-v "$(PWD):/usr/src/app" \
+		ghcr.io/tcort/markdown-link-check:stable \
+		--quiet \
+		$(MD_FILES)
 
 # cspell targets
 cspell-test:
