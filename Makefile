@@ -8,3 +8,5 @@ editorconfig-test:
 		-w "/usr/local/app" \
 		-v "$(PWD):/usr/local/app" \
 		-t mstruebing/editorconfig-checker
+
+test: editorconfig-test
