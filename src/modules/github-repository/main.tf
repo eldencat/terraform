@@ -92,7 +92,7 @@ resource "github_branch_protection" "all" {
 
 ########################################################
 #
-# Create environments 
+# Create environments
 #
 ########################################################
 resource "github_repository_environment" "env" {

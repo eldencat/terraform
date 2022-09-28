@@ -31,11 +31,11 @@ Attribute | Applies | Explanation
 
 :construction:
 
-## :robot: Logic 
+## :robot: Logic
 
 ### :seedling: Initialization
 
-:construction: 
+:construction:
 
 ### :recycle: Control Loop
 
