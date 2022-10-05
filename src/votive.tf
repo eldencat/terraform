@@ -2,8 +2,8 @@ locals {
   default_branch = "develop"
 
   svc = {
-    "storage" = {
-    }
+    "storage" = {},
+    "agent"   = {}
   }
 
   lib = {
